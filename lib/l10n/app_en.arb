@@ -45,5 +45,22 @@
     "roleUser": "User",
     "roleCompany": "Company",
     "roleGovernment": "Government",
-    "notAMember": "Not a member? "
+    "notAMember": "Not a member? ",
+    "noConversations": "You don't have any conversations yet.",
+    "writeMessage": "Write a message...",
+    "accessDenied": "Access denied. You are not authorized to play this game.",
+    "searchUser": "Search user",
+    "searchUserHint": "Name or email...",
+    "noResultsFound": "No results found.",
+    "usingDefaultLocation": "Using default location (EETAC UPC)",
+    "retry": "Retry",
+    "locationError": "Location services error",
+    "locationDenied": "Location permission denied",
+    "userStats": "User Statistics",
+    "total": "Total",
+    "uniqueRoles": "Unique Roles",
+    "userList": "User List",
+    "noUsersFound": "No users found",
+    "editProfile": "Edit Profile",
+    "updateProfileInfo": "Update your personal information"
 } 

@@ -45,5 +45,22 @@
     "roleUser": "Usuario",
     "roleCompany": "Empresa",
     "roleGovernment": "Gobierno",
-    "notAMember": "¿No eres miembro? "
+    "notAMember": "¿No eres miembro? ",
+    "noConversations": "Aún no tienes conversaciones.",
+    "writeMessage": "Escribe un mensaje...",
+    "accessDenied": "Acceso denegado. No estás autorizado para jugar a este juego.",
+    "searchUser": "Buscar usuario",
+    "searchUserHint": "Nombre o correo...",
+    "noResultsFound": "No se encontró nadie.",
+    "usingDefaultLocation": "Usando ubicación predeterminada (EETAC UPC)",
+    "retry": "Reintentar",
+    "locationError": "Error de servicios de ubicación",
+    "locationDenied": "Permiso de ubicación denegado",
+    "userStats": "Estadísticas de usuarios",
+    "total": "Total",
+    "uniqueRoles": "Roles únicos",
+    "userList": "Lista de usuarios",
+    "noUsersFound": "No se han encontrado usuarios",
+    "editProfile": "Editar Perfil",
+    "updateProfileInfo": "Actualiza tu información personal"
 } 

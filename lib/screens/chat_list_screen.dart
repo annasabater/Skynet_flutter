@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../provider/users_provider.dart';
 import '../models/user.dart';
-import '../widgets/language_selector.dart'; 
+import '../widgets/language_selector.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key? key}) : super(key: key);
@@ -30,10 +31,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
     final provider = Provider.of<UserProvider>(context);
     final convIds = provider.conversationUserIds;
     final convUsers = provider.users.where((u) => convIds.contains(u.id)).toList();
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chats'),
+        title: Text(localizations.chat),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -45,7 +47,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : convUsers.isEmpty
-              ? const Center(child: Text('Aún no tienes conversaciones.'))
+              ? Center(child: Text(localizations.noConversations ?? 'Aún no tienes conversaciones.'))
               : ListView.separated(
                   itemCount: convUsers.length,
                   separatorBuilder: (_, __) => const Divider(),

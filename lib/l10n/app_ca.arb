@@ -45,5 +45,22 @@
     "roleCompany": "Empresa",
     "roleGovernment": "Govern",
     "forgotPassword": "Has oblidat la Contrasenya?",
-    "notAMember": "Encara no ets membre? "
+    "notAMember": "Encara no ets membre? ",
+    "noConversations": "Encara no tens converses.",
+    "writeMessage": "Escriu un missatge...",
+    "accessDenied": "Accés denegat. No estàs autoritzat per jugar a aquest joc.",
+    "searchUser": "Cercar usuari",
+    "searchUserHint": "Nom o correu...",
+    "noResultsFound": "No s'ha trobat ningú.",
+    "usingDefaultLocation": "Utilitzant ubicació predeterminada (EETAC UPC)",
+    "retry": "Tornar a provar",
+    "locationError": "Error de serveis d'ubicació",
+    "locationDenied": "Permís d'ubicació denegat",
+    "userStats": "Estadístiques d'usuaris",
+    "total": "Total",
+    "uniqueRoles": "Rols únics",
+    "userList": "Llista d'usuaris",
+    "noUsersFound": "No s'han trobat usuaris",
+    "editProfile": "Editar Perfil",
+    "updateProfileInfo": "Actualitza la teva informació personal"
 } 

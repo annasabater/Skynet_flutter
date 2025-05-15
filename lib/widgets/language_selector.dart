@@ -9,30 +9,86 @@ class LanguageSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Usamos listen: true para garantizar que el widget se actualice cuando cambia el idioma
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: true);
     final localizations = AppLocalizations.of(context)!;
-    final languageProvider = Provider.of<LanguageProvider>(context);
 
-    return DropdownButton<String>(
-      value: languageProvider.currentLocale.languageCode,
-      items: [
-        DropdownMenuItem(
+    // Si el proveedor aún no está inicializado, mostramos un indicador de carga
+    if (!languageProvider.isInitialized) {
+      return const SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      );
+    }
+
+    // Obtenemos el código de idioma actual
+    final currentLang = languageProvider.currentLocale.languageCode;
+
+    return PopupMenuButton<String>(
+      tooltip: localizations.language,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.language),
+          const SizedBox(width: 4),
+          Text(
+            currentLang.toUpperCase(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+      onSelected: (String value) {
+        // Al seleccionar un idioma, lo cambiamos en el provider
+        languageProvider.setLanguage(value);
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
           value: 'en',
-          child: Text(localizations.english),
+          child: Row(
+            children: [
+              // Mostramos un check para el idioma seleccionado
+              if (currentLang == 'en')
+                const Icon(Icons.check, color: Colors.green)
+              else
+                const SizedBox(width: 24),
+              const SizedBox(width: 8),
+              Text(localizations.english),
+            ],
+          ),
         ),
-        DropdownMenuItem(
+        PopupMenuItem<String>(
           value: 'es',
-          child: Text(localizations.spanish),
+          child: Row(
+            children: [
+              if (currentLang == 'es')
+                const Icon(Icons.check, color: Colors.green)
+              else
+                const SizedBox(width: 24),
+              const SizedBox(width: 8),
+              Text(localizations.spanish),
+            ],
+          ),
         ),
-        DropdownMenuItem(
+        PopupMenuItem<String>(
           value: 'ca',
-          child: Text(localizations.catalan),
+          child: Row(
+            children: [
+              if (currentLang == 'ca')
+                const Icon(Icons.check, color: Colors.green)
+              else
+                const SizedBox(width: 24),
+              const SizedBox(width: 8),
+              Text(localizations.catalan),
+            ],
+          ),
         ),
       ],
-      onChanged: (String? value) {
-        if (value != null) {
-          languageProvider.setLanguage(value);
-        }
-      },
     );
   }
 } 

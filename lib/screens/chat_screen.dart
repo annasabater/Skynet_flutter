@@ -7,6 +7,8 @@ import '../models/user.dart';
 import '../models/message.dart';
 import '../services/auth_service.dart';
 import '../services/socket_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../widgets/language_selector.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userId;
@@ -112,8 +114,9 @@ class _ChatScreenState extends State<ChatScreen> {
       _controller.clear();
       // El callback onNewMessage añadirá y desplazará
     } else {
+      final localizations = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error enviando mensaje')),
+        SnackBar(content: Text(localizations.error)),
       );
     }
   }
@@ -138,6 +141,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     if (_currentUser == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -149,7 +154,12 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(peer.userName)),
+      appBar: AppBar(
+        title: Text(peer.userName),
+        actions: [
+          const LanguageSelector(),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(
@@ -190,8 +200,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    decoration:
-                        const InputDecoration(hintText: 'Escribe un mensaje...'),
+                    decoration: InputDecoration(
+                      hintText: localizations.writeMessage,
+                    ),
                     onSubmitted: (_) => _sendMessage(),
                   ),
                 ),

@@ -9,8 +9,26 @@ import 'package:SkyNet/provider/language_provider.dart';
 import 'package:SkyNet/routes/app_router.dart';
 import 'package:SkyNet/services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  // Aseguramos que Flutter esté inicializado
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Precargamos SharedPreferences para uso posterior
+  await SharedPreferences.getInstance();
+  
+  // Inicializamos y precargamos el LanguageProvider antes de ejecutar la app
+  final languageProvider = LanguageProvider();
+  // Esperamos hasta que el provider esté inicializado o por un máximo de 2 segundos
+  await Future.wait([
+    Future.doWhile(() async {
+      if (languageProvider.isInitialized) return false;
+      await Future.delayed(const Duration(milliseconds: 50));
+      return true;
+    }).timeout(const Duration(seconds: 2), onTimeout: () => false),
+  ]);
+  
   runApp(const MyApp());
 }
 
@@ -28,7 +46,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        // Usamos LanguageProvider.instance para asegurar que usamos la misma instancia
+        ChangeNotifierProvider.value(value: LanguageProvider()),
 
         // Injecta l'usuari desat (si existeix) al provider en arrencar
         ProxyProvider<UserProvider, void>(
@@ -40,6 +59,18 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer2<ThemeProvider, LanguageProvider>(
         builder: (context, themeProvider, languageProvider, _) {
+          // Si el proveedor de idioma aún no está inicializado, mostrar indicador de carga
+          if (!languageProvider.isInitialized) {
+            return MaterialApp(
+              title: 'S K Y N E T',
+              home: Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            );
+          }
+          
           return MaterialApp.router(
             title: 'S K Y N E T',
             debugShowCheckedModeBanner: false,

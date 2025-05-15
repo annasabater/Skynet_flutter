@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../provider/users_provider.dart';
 import '../models/user.dart';
-import '../widgets/language_selector.dart';  // ← importar
+import '../widgets/language_selector.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchUserScreen extends StatefulWidget {
   const SearchUserScreen({Key? key}) : super(key: key);
@@ -31,6 +32,8 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<UserProvider>(context);
     final currentUser = provider.currentUser;
+    final localizations = AppLocalizations.of(context)!;
+    
     final results = provider.users.where((u) {
       if (u.id == null || u.id == currentUser?.id) return false;
       final q = _query.toLowerCase();
@@ -40,7 +43,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buscar usuario'),
+        title: Text(localizations.searchUser ?? 'Buscar usuario'),
         actions: [
           const LanguageSelector(), 
         ],
@@ -52,16 +55,16 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: 'Nombre o correo…',
-                      prefixIcon: Icon(Icons.search),
+                    decoration: InputDecoration(
+                      hintText: localizations.searchUserHint ?? 'Nombre o correo…',
+                      prefixIcon: const Icon(Icons.search),
                     ),
                     onChanged: (v) => setState(() => _query = v),
                   ),
                 ),
                 Expanded(
                   child: results.isEmpty
-                      ? const Center(child: Text('No se encontró nadie.'))
+                      ? Center(child: Text(localizations.noResultsFound ?? 'No se encontró nadie.'))
                       : ListView.separated(
                           itemCount: results.length,
                           separatorBuilder: (_, __) => const Divider(),

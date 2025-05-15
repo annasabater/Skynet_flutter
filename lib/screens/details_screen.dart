@@ -4,6 +4,7 @@ import 'package:SkyNet/widgets/Layout.dart';
 import '../provider/users_provider.dart';
 import 'package:provider/provider.dart';
 import '../widgets/UserCard.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({super.key});
@@ -24,9 +25,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<UserProvider>(context, listen: true);
+    final localizations = AppLocalizations.of(context)!;
     
     return LayoutWrapper(
-      title: 'Usuaris',
+      title: localizations.users,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -47,7 +49,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Estadístiques d\'usuaris',
+                            localizations.userStats,
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                           const SizedBox(height: 24),
@@ -56,14 +58,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             children: [
                               _buildStatCard(
                                 context,
-                                'Total',
+                                localizations.total,
                                 provider.users.length.toString(),
                                 Icons.people,
                                 Colors.blue,
                               ),
                               _buildStatCard(
                                 context,
-                                'Rols únics',
+                                localizations.uniqueRoles,
                                 provider.users.isEmpty
                                     ? 'N/A'
                                     : provider.users.map((u) => u.role).toSet().length.toString(),
@@ -91,7 +93,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Llista d\'usuaris',
+                                localizations.userList,
                                 style: Theme.of(context).textTheme.headlineSmall,
                               ),
                               if (provider.isLoading)
@@ -100,20 +102,20 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                           const SizedBox(height: 16),
                           if (!provider.isLoading && provider.users.isEmpty)
-                            const Center(
+                            Center(
                               child: Padding(
-                                padding: EdgeInsets.all(32.0),
+                                padding: const EdgeInsets.all(32.0),
                                 child: Column(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.person_off,
                                       size: 64,
                                       color: Colors.grey,
                                     ),
-                                    SizedBox(height: 16),
+                                    const SizedBox(height: 16),
                                     Text(
-                                      'No s\'han trobat usuaris',
-                                      style: TextStyle(
+                                      localizations.noUsersFound,
+                                      style: const TextStyle(
                                         fontSize: 18,
                                         color: Colors.grey,
                                       ),

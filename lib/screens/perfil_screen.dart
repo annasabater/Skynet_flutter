@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/Layout.dart';
 import '../services/auth_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({Key? key}) : super(key: key);
@@ -43,8 +44,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return LayoutWrapper(
-      title: 'Perfil',
+      title: localizations.profile,
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -85,7 +88,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Rol: ${_user?['role'] ?? ''}',
+                          '${localizations.role}: ${_user?['role'] ?? ''}',
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
@@ -106,7 +109,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                                 const SizedBox(height: 4),
                                 Text(_user?['_id'] ?? ''),
                                 const Divider(),
-                                Text('Rol', style: Theme.of(context).textTheme.titleSmall),
+                                Text(localizations.role, style: Theme.of(context).textTheme.titleSmall),
                                 const SizedBox(height: 4),
                                 Text(_user?['role'] ?? ''),
                               ],
@@ -116,8 +119,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         const SizedBox(height: 32),
                         ListTile(
                           leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary),
-                          title: const Text('Editar Perfil'),
-                          subtitle: const Text('Actualitza la teva informació personal'),
+                          title: Text(localizations.editProfile ?? 'Editar Perfil'),
+                          subtitle: Text(localizations.updateProfileInfo ?? 'Actualitza la teva informació personal'),
                           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                           onTap: () => context.go('/profile/edit'),
                         ),
@@ -128,7 +131,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                             context.go('/login');
                           },
                           icon: const Icon(Icons.logout),
-                          label: const Text('TANCAR SESSIÓ'),
+                          label: Text(localizations.logout),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             backgroundColor: Colors.red,

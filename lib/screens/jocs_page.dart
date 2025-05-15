@@ -35,6 +35,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../provider/users_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../widgets/language_selector.dart';
 
 class JocsPage extends StatelessWidget {
   const JocsPage({Key? key}) : super(key: key);
@@ -42,8 +44,15 @@ class JocsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCompetitor = context.watch<UserProvider>().isCompetitor;
+    final localizations = AppLocalizations.of(context)!;
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('Juegos')),
+      appBar: AppBar(
+        title: Text(localizations.games),
+        actions: [
+          const LanguageSelector(),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -61,7 +70,7 @@ class JocsPage extends StatelessWidget {
               context,
               title: 'COMPETÈNCIA',
               image: 'assets/competencia.png',
-              buttonText: 'Entrar',
+              buttonText: localizations.submit,
               onTap: () {
                 if (isCompetitor) {
                   context.go('/jocs/open');
@@ -69,10 +78,13 @@ class JocsPage extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: const Text('Acceso denegado'),
-                      content: const Text('No estás autorizado para jugar a la competencia.'),
+                      title: Text(localizations.error),
+                      content: Text(localizations.accessDenied ?? 'No estás autorizado para jugar a la competencia.'),
                       actions: [
-                        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(), 
+                          child: Text(localizations.ok)
+                        ),
                       ],
                     ),
                   );
@@ -84,7 +96,7 @@ class JocsPage extends StatelessWidget {
               context,
               title: 'CURSES',
               image: 'assets/curses.png',
-              buttonText: 'Entrar',
+              buttonText: localizations.submit,
               onTap: () {},
             ),
             const SizedBox(height: 24),
@@ -92,7 +104,7 @@ class JocsPage extends StatelessWidget {
               context,
               title: 'OBSTACLES',
               image: 'assets/obstacles.png',
-              buttonText: 'Entrar',
+              buttonText: localizations.submit,
               onTap: () {},
             ),
           ],
