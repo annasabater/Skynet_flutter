@@ -96,11 +96,11 @@ class _MapaScreenState extends State<MapaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mapa de Vuelo de Drones'),
+        title: const Text('Mapa de Vol de Drons'),
         actions: [
           IconButton(
             icon: Icon(_showZones ? Icons.layers : Icons.layers_outlined),
-            tooltip: 'Mostrar/Ocultar Zonas',
+            tooltip: 'Mostrar/Amagar Zones',
             onPressed: () {
               setState(() {
                 _showZones = !_showZones;
@@ -109,7 +109,7 @@ class _MapaScreenState extends State<MapaScreen> {
           ),
           IconButton(
             icon: Icon(_showLegend ? Icons.info : Icons.info_outline),
-            tooltip: 'Mostrar/Ocultar Leyenda',
+            tooltip: 'Mostrar/Amagar Llegenda',
             onPressed: () {
               setState(() {
                 _showLegend = !_showLegend;

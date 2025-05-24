@@ -26,7 +26,7 @@ class MapLegend extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Zonas de vuelo para drones',
+              'Zones de vol per a drons',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
@@ -35,24 +35,24 @@ class MapLegend extends StatelessWidget {
             const SizedBox(height: 8),
             _buildLegendItem(
               color: Colors.green,
-              label: 'Zona permitida',
-              description: 'Vuelo libre cumpliendo normativa',
+              label: 'Zona permesa',
+              description: 'Vol lliure complint normativa',
             ),
             const SizedBox(height: 4),
             _buildLegendItem(
               color: Colors.orange,
-              label: 'Zona restringida',
-              description: 'Requiere autorización previa',
+              label: 'Zona regulada',
+              description: 'Requereix autorització prèvia',
             ),
             const SizedBox(height: 4),
             _buildLegendItem(
               color: Colors.red,
               label: 'Zona prohibida',
-              description: 'Vuelo no permitido',
+              description: 'Vol no permès',
             ),
             const SizedBox(height: 8),
             const Text(
-              'Fuente: ENAIRE/AESA',
+              'Font: ENAIRE/AESA',
               style: TextStyle(
                 fontSize: 10,
                 fontStyle: FontStyle.italic,

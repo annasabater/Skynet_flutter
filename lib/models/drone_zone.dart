@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart' as latlng2;
 
 enum DroneZoneType {
-  permitida,
-  restringida,
+  permesa,
+  regulada,
   prohibida,
 }
 
@@ -24,9 +24,9 @@ class DroneZone {
 
   Color get color {
     switch (type) {
-      case DroneZoneType.permitida:
+      case DroneZoneType.permesa:
         return Colors.green.withOpacity(0.3);
-      case DroneZoneType.restringida:
+      case DroneZoneType.regulada:
         return Colors.orange.withOpacity(0.3);
       case DroneZoneType.prohibida:
         return Colors.red.withOpacity(0.3);
@@ -35,9 +35,9 @@ class DroneZone {
 
   Color get borderColor {
     switch (type) {
-      case DroneZoneType.permitida:
+      case DroneZoneType.permesa:
         return Colors.green;
-      case DroneZoneType.restringida:
+      case DroneZoneType.regulada:
         return Colors.orange;
       case DroneZoneType.prohibida:
         return Colors.red;
@@ -46,10 +46,10 @@ class DroneZone {
 
   String get typeLabel {
     switch (type) {
-      case DroneZoneType.permitida:
-        return "Zona permitida";
-      case DroneZoneType.restringida:
-        return "Zona restringida";
+      case DroneZoneType.permesa:
+        return "Zona permesa";
+      case DroneZoneType.regulada:
+        return "Zona regulada";
       case DroneZoneType.prohibida:
         return "Zona prohibida";
     }

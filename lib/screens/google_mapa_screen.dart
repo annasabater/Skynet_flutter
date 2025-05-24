@@ -52,7 +52,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
         }
       }
     } catch (e) {
-      print('Error al obtener ubicación inicial: $e');
+      print('Error al obtenir ubicació inicial: $e');
     }
   }
   
@@ -69,7 +69,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
         Marker(
           markerId: const MarkerId('current_location'),
           position: position,
-          infoWindow: const InfoWindow(title: 'Tu ubicación'),
+          infoWindow: const InfoWindow(title: 'Tu ubicació'),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
         ),
       );
@@ -85,18 +85,18 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
     }
     
     try {
-      // Usamos Madrid como ubicación predeterminada
+      // Usamos Madrid com a ubicació predeterminada
       final zones = await DroneZonesService().getZonesNearLocation(_kMadrid.target);
       
       if (mounted) {
         setState(() {
           _zonePolygons.clear();
           
-          // Convertir las zonas a polígonos de Google Maps
+          // Convertir les zones a polígons de Google Maps
           for (final zone in zones) {
             final points = <LatLng>[];
             
-            // Convertir puntos de cualquier tipo a LatLng de Google Maps
+            // Convertir punts de qualsevol tipus a LatLng de Google Maps
             for (final point in zone.points) {
               final googlePoint = convertToGoogleMaps(point);
               if (googlePoint != null) {
@@ -117,7 +117,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
             }
           }
           
-          // Añadir un marcador en el centro de Madrid si no hay ubicación actual
+          // Añadir un marcador en el centre de Madrid si no hi ha ubicació actual
           if (_markers.isEmpty) {
             _markers.add(
               Marker(
@@ -132,7 +132,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
         });
       }
     } catch (e) {
-      print('Error cargando zonas: $e');
+      print('Error carregant zones: $e');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -141,7 +141,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
     }
   }
   
-  // Intentar obtener la ubicación actual del usuario
+  // Intentar obtenir la ubicació actual de l'usuari
   Future<void> _getCurrentLocation() async {
     if (mounted) {
       setState(() {
@@ -158,12 +158,12 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
         }
       }
     } catch (e) {
-      print('Error obteniendo ubicación: $e');
-      // Mostrar un mensaje de error al usuario
+      print('Error obtenint ubicació: $e');
+      // Mostrar un missatge d'error a l'usuari
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('No se pudo obtener tu ubicación: $e'),
+            content: Text('No es va poder obtenir la teva ubicació: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -181,11 +181,11 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mapa de Vuelo de Drones'),
+        title: const Text('Mapa de Vol de Drons'),
         actions: [
           IconButton(
             icon: Icon(_showZones ? Icons.layers : Icons.layers_outlined),
-            tooltip: 'Mostrar/Ocultar Zonas',
+            tooltip: 'Mostrar/Amagar Zones',
             onPressed: () {
               setState(() {
                 _showZones = !_showZones;
@@ -194,7 +194,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
           ),
           IconButton(
             icon: Icon(_showLegend ? Icons.info : Icons.info_outline),
-            tooltip: 'Mostrar/Ocultar Leyenda',
+            tooltip: 'Mostrar/Amagar Llegenda',
             onPressed: () {
               setState(() {
                 _showLegend = !_showLegend;
@@ -221,7 +221,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
             compassEnabled: true,
           ),
           
-          // Indicador de carga
+          // Indicador de càrrega
           if (_isLoading)
             Container(
               color: Colors.white.withOpacity(0.5),
@@ -230,7 +230,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
               ),
             ),
           
-          // Leyenda
+          // Lleienda
           if (_showLegend)
             const Positioned(
               right: 16,
@@ -238,7 +238,7 @@ class _GoogleMapaScreenState extends State<GoogleMapaScreen> {
               child: MapLegend(),
             ),
           
-          // Controles personalizados
+          // Controles personalitzats
           Positioned(
             left: 16,
             bottom: 16,

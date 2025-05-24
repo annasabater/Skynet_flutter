@@ -28,7 +28,7 @@ class DroneZonesService {
         return zones;
       }
     } catch (e) {
-      print('Error cargando datos reales: $e');
+      print('Error carregant dades reals: $e');
       // Si falla, usamos datos simulados
     }
     
@@ -52,60 +52,83 @@ class DroneZonesService {
   // Carga datos desde archivo JSON local (simulando datos de ENAIRE/AESA)
   Future<List<DroneZone>> _loadFromAssets() async {
     try {
-      // Simulamos datos reales con datos ficticios predefinidos 
-      // (en una app real cargaríamos desde un archivo JSON o una API)
+      // Simulamos datos reales con datos ficticios predefinidos para Cataluña
       final List<DroneZone> zones = [
-        // Zonas prohibidas - aeropuertos principales de España
-        DroneZone(
-          id: 'mad',
-          name: 'Aeropuerto Madrid-Barajas',
-          type: DroneZoneType.prohibida,
-          description: 'Espacio aéreo controlado CTR',
-          points: [
-            latlng2.LatLng(40.4983, -3.5676),
-            latlng2.LatLng(40.5083, -3.5476),
-            latlng2.LatLng(40.4883, -3.5276),
-            latlng2.LatLng(40.4783, -3.5476),
-          ],
-        ),
+        // Zonas prohibidas - aeropuertos principales de Cataluña
         DroneZone(
           id: 'bcn',
-          name: 'Aeropuerto Barcelona-El Prat',
+          name: 'Aeroport Barcelona-El Prat',
           type: DroneZoneType.prohibida,
-          description: 'Espacio aéreo controlado CTR',
+          description: 'Espai aeri controlat CTR',
           points: [
             latlng2.LatLng(41.3097, 2.0786),
-            latlng2.LatLng(41.3197, 2.0986),
+            latlng2.LatLng(41.3297, 2.0986),
             latlng2.LatLng(41.2997, 2.1186),
-            latlng2.LatLng(41.2897, 2.0986),
+            latlng2.LatLng(41.2797, 2.0986),
+          ],
+        ),
+        DroneZone(
+          id: 'girona',
+          name: 'Aeroport Girona-Costa Brava',
+          type: DroneZoneType.prohibida,
+          description: 'Espai aeri controlat CTR',
+          points: [
+            latlng2.LatLng(41.9000, 2.7500),
+            latlng2.LatLng(41.9200, 2.7700),
+            latlng2.LatLng(41.8800, 2.7900),
+            latlng2.LatLng(41.8600, 2.7700),
           ],
         ),
         
-        // Zonas restringidas - bases militares
+        // Zonas reguladas - zonas próximas a aeródromos pequeños e infraestructuras críticas
         DroneZone(
-          id: 'military1',
-          name: 'Base Militar Torrejón',
-          type: DroneZoneType.restringida,
-          description: 'Requiere autorización previa',
+          id: 'sabadell',
+          name: 'Aeròdrom de Sabadell',
+          type: DroneZoneType.regulada,
+          description: 'Requereix autorització prèvia',
           points: [
-            latlng2.LatLng(40.4867, -3.4414),
-            latlng2.LatLng(40.4967, -3.4214),
-            latlng2.LatLng(40.4767, -3.4014),
-            latlng2.LatLng(40.4667, -3.4214),
+            latlng2.LatLng(41.5200, 2.1000),
+            latlng2.LatLng(41.5400, 2.1200),
+            latlng2.LatLng(41.5000, 2.1400),
+            latlng2.LatLng(41.4800, 2.1200),
+          ],
+        ),
+        DroneZone(
+          id: 'montseny',
+          name: 'Parc Natural del Montseny',
+          type: DroneZoneType.regulada,
+          description: 'Zona natural amb restriccions',
+          points: [
+            latlng2.LatLng(41.7500, 2.3800),
+            latlng2.LatLng(41.8500, 2.4000),
+            latlng2.LatLng(41.8300, 2.5000),
+            latlng2.LatLng(41.7300, 2.4800),
           ],
         ),
         
-        // Zonas permitidas - parques y áreas recreativas
+        // Zonas permitidas - áreas rurales sin población
         DroneZone(
-          id: 'park1',
-          name: 'Parque del Retiro',
-          type: DroneZoneType.permitida,
-          description: 'Vuelo permitido por debajo de 120m',
+          id: 'rural1',
+          name: 'Zona Rural Plana de Vic',
+          type: DroneZoneType.permesa,
+          description: 'Vol permès complint normativa',
           points: [
-            latlng2.LatLng(40.4150, -3.6892),
-            latlng2.LatLng(40.4250, -3.6792),
-            latlng2.LatLng(40.4150, -3.6692),
-            latlng2.LatLng(40.4050, -3.6792),
+            latlng2.LatLng(41.9300, 2.2500),
+            latlng2.LatLng(41.9500, 2.2700),
+            latlng2.LatLng(41.9300, 2.2900),
+            latlng2.LatLng(41.9100, 2.2700),
+          ],
+        ),
+        DroneZone(
+          id: 'rural2',
+          name: 'Camps Agrícoles Baix Llobregat',
+          type: DroneZoneType.permesa,
+          description: 'Vol permès fins a 120m',
+          points: [
+            latlng2.LatLng(41.3200, 2.0000),
+            latlng2.LatLng(41.3400, 2.0200),
+            latlng2.LatLng(41.3200, 2.0400),
+            latlng2.LatLng(41.3000, 2.0200),
           ],
         ),
       ];
@@ -113,7 +136,7 @@ class DroneZonesService {
       await Future.delayed(const Duration(milliseconds: 300)); // Simular carga de red
       return zones;
     } catch (e) {
-      print('Error cargando zonas desde assets: $e');
+      print('Error carregant zones des d\'assets: $e');
       return [];
     }
   }
@@ -124,9 +147,9 @@ class DroneZonesService {
       // Zona prohibida (aeropuerto ficticio)
       DroneZone(
         id: 'zona1',
-        name: 'Aeropuerto Internacional',
+        name: 'Aeroport Internacional',
         type: DroneZoneType.prohibida,
-        description: 'Zona prohibida para drones: Espacio aéreo controlado',
+        description: 'Zona prohibida per a drons: Espai aeri controlat',
         points: [
           latlng2.LatLng(lat + 0.02, lng - 0.02),
           latlng2.LatLng(lat + 0.02, lng + 0.02),
@@ -135,12 +158,12 @@ class DroneZonesService {
         ],
       ),
       
-      // Zona restringida (área militar ficticia)
+      // Zona regulada (área con restricciones)
       DroneZone(
         id: 'zona2',
-        name: 'Zona Militar',
-        type: DroneZoneType.restringida,
-        description: 'Requiere autorización especial',
+        name: 'Zona d\'Infraestructura Crítica',
+        type: DroneZoneType.regulada,
+        description: 'Requereix autorització especial',
         points: [
           latlng2.LatLng(lat - 0.015, lng - 0.03),
           latlng2.LatLng(lat - 0.015, lng - 0.01),
@@ -149,12 +172,12 @@ class DroneZonesService {
         ],
       ),
       
-      // Zona permitida (parque ficticio)
+      // Zona permitida (área rural ficticia)
       DroneZone(
         id: 'zona3',
-        name: 'Parque Municipal',
-        type: DroneZoneType.permitida,
-        description: 'Vuelo permitido por debajo de 120m de altura',
+        name: 'Àrea Rural',
+        type: DroneZoneType.permesa,
+        description: 'Vol permès per sota de 120m d\'alçada',
         points: [
           latlng2.LatLng(lat + 0.01, lng - 0.04),
           latlng2.LatLng(lat + 0.03, lng - 0.04),
@@ -180,7 +203,7 @@ class DroneZonesService {
       
       return [];
     } catch (e) {
-      print('Error cargando datos de ENAIRE: $e');
+      print('Error carregant dades d\'ENAIRE: $e');
       return [];
     }
   }
