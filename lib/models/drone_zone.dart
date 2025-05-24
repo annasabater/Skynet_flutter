@@ -25,22 +25,22 @@ class DroneZone {
   Color get color {
     switch (type) {
       case DroneZoneType.permesa:
-        return Colors.green.withOpacity(0.3);
+        return Colors.green.withOpacity(0.6);
       case DroneZoneType.regulada:
-        return Colors.orange.withOpacity(0.3);
+        return Colors.orange.withOpacity(0.6);
       case DroneZoneType.prohibida:
-        return Colors.red.withOpacity(0.3);
+        return Colors.red.withOpacity(0.6);
     }
   }
 
   Color get borderColor {
     switch (type) {
       case DroneZoneType.permesa:
-        return Colors.green;
+        return Colors.green.shade800;
       case DroneZoneType.regulada:
-        return Colors.orange;
+        return Colors.orange.shade800;
       case DroneZoneType.prohibida:
-        return Colors.red;
+        return Colors.red.shade800;
     }
   }
 
