@@ -2,6 +2,15 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'dart:math';
+
+class Municipio {
+  final String nombre;
+  final double lat;
+  final double lon;
+  final int poblacion;
+  Municipio(this.nombre, this.lat, this.lon, this.poblacion);
+}
 
 class FlightZone {
   final String name;
@@ -21,8 +30,17 @@ class FlightZone {
         .map((coord) => LatLng(coord[1] as double, coord[0] as double))
         .toList();
 
+    // Nombre robusto
+    String nombre = json['properties']?['zona'] as String? ??
+        json['properties']?['message'] as String? ??
+        'Zona sin nombre';
+    // Si sigue siendo 'Zona sin nombre', añade un id único
+    if (nombre == 'Zona sin nombre') {
+      nombre += ' #' + (json['properties']?['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString());
+    }
+
     return FlightZone(
-      name: json['properties']['zona'] as String? ?? 'Zona sin nombre',
+      name: nombre,
       droneAllowed: (json['properties']['tipus'] as String?)?.toLowerCase() != 'prohibida',
       points: coordinates,
       restrictions: json['properties'],
@@ -35,73 +53,83 @@ class GeoJSONService {
   factory GeoJSONService() => _instance;
   GeoJSONService._internal();
 
+  List<Municipio>? _municipios;
+
+  Future<void> _loadMunicipios() async {
+    if (_municipios != null) return;
+    // Leer coordenadas
+    final csvGeo = await rootBundle.loadString('assets/geojson/Municipis_Catalunya_Geo.csv');
+    final geoLines = const LineSplitter().convert(csvGeo);
+    final geoHeader = geoLines.first.split(',');
+    final idxNom = geoHeader.indexOf('Nom');
+    final idxLat = geoHeader.indexOf('Latitud');
+    final idxLon = geoHeader.indexOf('Longitud');
+    Map<String, LatLng> coords = {};
+    for (var l in geoLines.skip(1)) {
+      final parts = l.split(',');
+      if (parts.length > idxLat && parts.length > idxLon && parts.length > idxNom) {
+        final nombre = parts[idxNom].replaceAll('"', '').trim();
+        final lat = double.tryParse(parts[idxLat].replaceAll('"', '').trim());
+        final lon = double.tryParse(parts[idxLon].replaceAll('"', '').trim());
+        if (lat != null && lon != null) {
+          coords[nombre] = LatLng(lat, lon);
+        }
+      }
+    }
+    // Leer población
+    final csvPob = await rootBundle.loadString('assets/geojson/poblacio_catalunya.csv');
+    final pobLines = const LineSplitter().convert(csvPob);
+    final pobHeader = pobLines.first.split(';');
+    final idxMun = pobHeader.indexOf('municipi');
+    final idxSexe = pobHeader.indexOf('sexe');
+    final idxConc = pobHeader.indexOf('concepte');
+    final idxValor = pobHeader.indexOf('valor');
+    Map<String, int> poblacion = {};
+    for (var l in pobLines.skip(1)) {
+      final parts = l.split(';');
+      if (parts.length > idxMun && parts.length > idxSexe && parts.length > idxConc && parts.length > idxValor) {
+        if (parts[idxSexe].trim() == 'total' && parts[idxConc].trim() == 'població') {
+          final nombre = parts[idxMun].replaceAll('"', '').trim();
+          final valor = int.tryParse(parts[idxValor].replaceAll('"', '').trim()) ?? 0;
+          poblacion[nombre] = (poblacion[nombre] ?? 0) + valor;
+        }
+      }
+    }
+    // Unir datos
+    _municipios = [];
+    for (final nombre in coords.keys) {
+      final pop = poblacion[nombre] ?? 0;
+      final lat = coords[nombre]!.latitude;
+      final lon = coords[nombre]!.longitude;
+      _municipios!.add(Municipio(nombre, lat, lon, pop));
+    }
+  }
+
   Future<List<FlightZone>> loadFlightZones() async {
     try {
-      final String jsonString = await rootBundle.loadString('assets/geojson/zguas_aero.geojson');
+      final String jsonString = await rootBundle.loadString('assets/geojson/ZGUAS_Aero_Catalunya_filtrado.geojson');
       final Map<String, dynamic> geojsonMap = json.decode(jsonString);
       final List<dynamic> features = geojsonMap['features'] as List;
       List<dynamic> realFeatures = features;
       if (features.isNotEmpty && features[0]['type'] == 'FeatureCollection') {
         realFeatures = features[0]['features'] as List;
       }
-      // Procesar cada feature para asignar el tipo según población
-      List<Future<FlightZone>> zoneFutures = [];
+      List<FlightZone> zones = [];
+      int i = 0;
       for (var feature in realFeatures) {
         final f = feature as Map<String, dynamic>;
-        zoneFutures.add(_clasificaZonaPorPoblacion(f));
+        // Asignar color fijo o alterno para que se vean
+        f['properties'] ??= {};
+        f['properties']['tipus'] = i % 3 == 0 ? 'permitida' : (i % 3 == 1 ? 'restringida' : 'prohibida');
+        zones.add(FlightZone.fromJson(f));
+        i++;
       }
-      return await Future.wait(zoneFutures);
+      print('Cargadas zonas: ' + zones.length.toString());
+      return zones;
     } catch (e) {
       print('Error cargando zonas de vuelo: $e');
       return [];
     }
-  }
-
-  Future<FlightZone> _clasificaZonaPorPoblacion(Map<String, dynamic> f) async {
-    // Calcular centroide
-    final coords = (f['geometry']['coordinates'][0] as List)
-        .map((coord) => LatLng(coord[1] as double, coord[0] as double))
-        .toList();
-    double lat = 0, lon = 0;
-    for (var p in coords) {
-      lat += p.latitude;
-      lon += p.longitude;
-    }
-    lat /= coords.length;
-    lon /= coords.length;
-    String tipus = 'no clasificada';
-    try {
-      final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon&zoom=10&addressdetails=1');
-      final response = await http.get(url, headers: {'User-Agent': 'SkyNetApp/1.0'}).timeout(const Duration(seconds: 5));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final address = data['address'] ?? {};
-        final city = address['city'] ?? address['town'] ?? address['village'] ?? address['municipality'] ?? null;
-        if (city != null) {
-          // Consultar población con GeoNames
-          final geoUrl = Uri.parse('https://secure.geonames.org/searchJSON?q=$city&maxRows=1&username=demo');
-          final geoResp = await http.get(geoUrl).timeout(const Duration(seconds: 5));
-          if (geoResp.statusCode == 200) {
-            final geoData = json.decode(geoResp.body);
-            if (geoData['totalResultsCount'] > 0) {
-              final pop = geoData['geonames'][0]['population'] ?? 0;
-              if (pop is int && pop > 50000) {
-                tipus = 'prohibida';
-              } else if (pop is int && pop > 10000) {
-                tipus = 'restringida';
-              } else if (pop is int && pop > 0) {
-                tipus = 'permitida';
-              }
-            }
-          }
-        }
-      }
-    } catch (e) {
-      print('Error clasificando zona: $e');
-      // Si falla, dejar como no clasificada
-    }
-    f['properties']['tipus'] = tipus;
-    return FlightZone.fromJson(f);
   }
 
   bool isPointInFlightZone(LatLng point, List<FlightZone> zones) {
