@@ -95,7 +95,6 @@ flutter:
     - .env
     - assets/fonts/
     - assets/geojson/
-    - assets/geojson/zguas_aero.geojson
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

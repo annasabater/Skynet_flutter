@@ -107,7 +107,7 @@ class GeoJSONService {
 
   Future<List<FlightZone>> loadFlightZones() async {
     try {
-      final String jsonString = await rootBundle.loadString('assets/geojson/ZGUAS_Aero_Catalunya_filtrado.geojson');
+      final String jsonString = await rootBundle.loadString('assets/geojson/dades.geojson');
       final Map<String, dynamic> geojsonMap = json.decode(jsonString);
       final List<dynamic> features = geojsonMap['features'] as List;
       List<dynamic> realFeatures = features;
