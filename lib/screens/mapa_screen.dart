@@ -11,21 +11,27 @@ import 'package:SkyNet/widgets/map_legend.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'package:SkyNet/services/geojson_service.dart';
+import 'package:SkyNet/widgets/flight_zones_layer.dart';
+import 'package:SkyNet/widgets/flight_zone_info.dart';
 
 class MapaScreen extends StatefulWidget {
-  const MapaScreen({Key? key}) : super(key: key);
+  const MapaScreen({super.key});
 
   @override
   State<MapaScreen> createState() => _MapaScreenState();
 }
 
 class _MapaScreenState extends State<MapaScreen> {
+  final GeoJSONService _geoJSONService = GeoJSONService();
+  List<FlightZone> _zones = [];
+  FlightZone? _selectedZone;
+  final MapController _mapController = MapController();
   LatLng? _currentPosition;
   bool _loading = true;
   String? _error;
-  final MapController _mapController = MapController();
   bool _mapInitialized = false;
-  double _currentZoom = 15.0;
+  double _currentZoom = 10.0;
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _suggestions = [];
   bool _searchLoading = false;
@@ -34,6 +40,7 @@ class _MapaScreenState extends State<MapaScreen> {
   @override
   void initState() {
     super.initState();
+    _loadZones();
     _getLocation();
   }
 
@@ -42,6 +49,13 @@ class _MapaScreenState extends State<MapaScreen> {
     _searchController.dispose();
     _searchFocus.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadZones() async {
+    final zones = await _geoJSONService.loadFlightZones();
+    setState(() {
+      _zones = zones;
+    });
   }
 
   Future<void> _getLocation() async {
@@ -53,8 +67,6 @@ class _MapaScreenState extends State<MapaScreen> {
           _currentPosition = latLng as LatLng?;
           _loading = false;
         });
-        
-        // Centrar el mapa en la ubicación actual
         if (_currentPosition != null && _mapInitialized && mounted) {
           _mapController.move(_currentPosition!, _currentZoom);
         }
@@ -119,148 +131,69 @@ class _MapaScreenState extends State<MapaScreen> {
     }
   }
 
+  void _onZoneTap(FlightZone zone) {
+    setState(() {
+      _selectedZone = zone;
+    });
+    final center = _calculateZoneCenter(zone.points);
+    _mapController.move(center, 13.0);
+  }
+
+  LatLng _calculateZoneCenter(List<LatLng> points) {
+    double lat = 0;
+    double lon = 0;
+    for (var point in points) {
+      lat += point.latitude;
+      lon += point.longitude;
+    }
+    return LatLng(lat / points.length, lon / points.length);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mapa')),
+      appBar: AppBar(
+        title: const Text('Mapa de Zonas de Vuelo'),
+      ),
       body: Stack(
         children: [
-          Column(
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: const LatLng(41.3851, 2.1734),
+              initialZoom: _currentZoom,
+              onMapReady: () {
+                setState(() {
+                  _mapInitialized = true;
+                });
+                if (_currentPosition != null && mounted) {
+                  _mapController.move(_currentPosition!, _currentZoom);
+                }
+              },
+            ),
             children: [
-              // Mapa
-              Expanded(
-                child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _error != null
-                    ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
-                    : Stack(
-                        children: [
-                          FlutterMap(
-                            mapController: _mapController,
-                            options: MapOptions(
-                              center: _currentPosition ?? const LatLng(41.3851, 2.1734), // Barcelona por defecto
-                              zoom: _currentZoom,
-                              onMapReady: () {
-                                setState(() {
-                                  _mapInitialized = true;
-                                });
-                                if (_currentPosition != null && mounted) {
-                                  _mapController.move(_currentPosition!, _currentZoom);
-                                }
-                              },
-                            ),
-                            children: [
-                              TileLayer(
-                                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                userAgentPackageName: 'com.example.SkyNet',
-                                tileProvider: NetworkTileProvider(),
-                              ),
-                              // Zonas de restricción de vuelo
-                              CircleLayer(
-                                circles: [
-                                  // Aeropuerto de Barcelona (rojo)
-                                  CircleMarker(
-                                    point: const LatLng(41.2971, 2.0785), // Aeropuerto de Barcelona
-                                    radius: 3360, // 4.8km * 0.7 = 3.36km
-                                    useRadiusInMeter: true,
-                                    color: Colors.red.withOpacity(0.6),
-                                    borderColor: Colors.red,
-                                    borderStrokeWidth: 2,
-                                  ),
-                                  // Centro de Barcelona (rojo)
-                                  CircleMarker(
-                                    point: const LatLng(41.3851, 2.1734), // Centro de Barcelona
-                                    radius: 5400, // 5.4km
-                                    useRadiusInMeter: true,
-                                    color: Colors.red.withOpacity(0.6),
-                                    borderColor: Colors.red,
-                                    borderStrokeWidth: 2,
-                                  ),
-                                  // EETAC (verde)
-                                  CircleMarker(
-                                    point: const LatLng(41.2757, 1.9881), // EETAC
-                                    radius: 492, // 0.492km (un 59% més petit)
-                                    useRadiusInMeter: true,
-                                    color: Colors.green.withOpacity(0.6),
-                                    borderColor: Colors.green,
-                                    borderStrokeWidth: 2,
-                                  ),
-                                  // Montseny (verde)
-                                  CircleMarker(
-                                    point: const LatLng(41.7667, 2.4000), // Montseny
-                                    radius: 7200, // 7.2km
-                                    useRadiusInMeter: true,
-                                    color: Colors.green.withOpacity(0.6),
-                                    borderColor: Colors.green,
-                                    borderStrokeWidth: 2,
-                                  ),
-                                  // Collserola (verde)
-                                  CircleMarker(
-                                    point: const LatLng(41.4167, 2.1000), // Collserola
-                                    radius: 5399, // Just per tocar el de Barcelona sense solapar
-                                    useRadiusInMeter: true,
-                                    color: Colors.green.withOpacity(0.6),
-                                    borderColor: Colors.green,
-                                    borderStrokeWidth: 2,
-                                  ),
-                                  // Creueta dels Aragalls (groc)
-                                  CircleMarker(
-                                    point: const LatLng(41.4181, 1.8417), // Creueta dels Aragalls
-                                    radius: 3360, // 3.36km
-                                    useRadiusInMeter: true,
-                                    color: Colors.yellow.withOpacity(0.6),
-                                    borderColor: Colors.yellow,
-                                    borderStrokeWidth: 2,
-                                  ),
-                                ],
-                              ),
-                              if (_currentPosition != null)
-                                MarkerLayer(
-                                  markers: [
-                                    Marker(
-                                      point: _currentPosition!,
-                                      width: 60,
-                                      height: 60,
-                                      child: const Icon(Icons.location_pin, color: Colors.red, size: 40),
-                                    ),
-                                  ],
-                                ),
-                            ],
-                          ),
-                          // Leyenda
-                          Positioned(
-                            right: 16,
-                            top: MediaQuery.of(context).size.height * 0.4,
-                            child: MapLegend(),
-                          ),
-                          // Botones de zoom
-                          Positioned(
-                            left: 16,
-                            bottom: 90,
-                            child: Column(
-                              children: [
-                                FloatingActionButton(
-                                  mini: true,
-                                  onPressed: _zoomIn,
-                                  child: const Icon(Icons.add),
-                                  heroTag: 'zoom-in',
-                                ),
-                                const SizedBox(height: 8),
-                                FloatingActionButton(
-                                  mini: true,
-                                  onPressed: _zoomOut,
-                                  child: const Icon(Icons.remove),
-                                  heroTag: 'zoom-out',
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.app',
               ),
+              FlightZonesLayer(
+                zones: _zones,
+                onZoneTap: _onZoneTap,
+              ),
+              if (_currentPosition != null)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _currentPosition!,
+                      width: 60,
+                      height: 60,
+                      child: const Icon(Icons.location_pin, color: Colors.red, size: 40),
+                    ),
+                  ],
+                ),
             ],
           ),
-          // Buscador petit a la part superior dreta
+          // Buscador
           Positioned(
             top: 16,
             right: 32,
@@ -273,7 +206,7 @@ class _MapaScreenState extends State<MapaScreen> {
                     controller: _searchController,
                     focusNode: _searchFocus,
                     decoration: InputDecoration(
-                      hintText: 'Buscar lloc...',
+                      hintText: 'Buscar lugar...',
                       prefixIcon: const Icon(Icons.search),
                       filled: true,
                       fillColor: Colors.white,
@@ -321,17 +254,56 @@ class _MapaScreenState extends State<MapaScreen> {
               ),
             ),
           ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: _getLocation,
-            tooltip: 'Mi ubicació',
-            child: const Icon(Icons.my_location),
-            heroTag: 'my-location',
+          // Leyenda
+          Positioned(
+            right: 16,
+            top: MediaQuery.of(context).size.height * 0.4,
+            child: MapLegend(),
           ),
+          // Botones de zoom
+          Positioned(
+            left: 16,
+            bottom: 90,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  mini: true,
+                  onPressed: _zoomIn,
+                  child: const Icon(Icons.add),
+                  heroTag: 'zoom-in',
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  mini: true,
+                  onPressed: _zoomOut,
+                  child: const Icon(Icons.remove),
+                  heroTag: 'zoom-out',
+                ),
+              ],
+            ),
+          ),
+          // Botón de ubicación
+          Positioned(
+            left: 16,
+            bottom: 16,
+            child: FloatingActionButton(
+              onPressed: _getLocation,
+              tooltip: 'Mi ubicación',
+              child: const Icon(Icons.my_location),
+              heroTag: 'my-location',
+            ),
+          ),
+          // Info de zona
+          if (_selectedZone != null)
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: FlightZoneInfo(
+                zone: _selectedZone!,
+                onClose: () => setState(() => _selectedZone = null),
+              ),
+            ),
         ],
       ),
     );
