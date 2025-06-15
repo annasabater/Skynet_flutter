@@ -9,6 +9,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../services/socket_service.dart';
 import '../data/game_texts.dart';
+import 'package:SkyNet/screens/mini_game/drone_game.dart';
 
 class SpectateSessionsPage extends StatefulWidget {
   final String sessionId;
@@ -327,40 +328,55 @@ void _connectAsSpectator() {
             top: 16,
             right: 16,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.85),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: _scores.entries.map((e) {
-                  final clr = _playerColor[e.key]!;
-                  final name = {
-                    'dron_rojo1@upc.edu': 'Jugador 1 (Rojo)',
-                    'dron_azul1@upc.edu': 'Jugador 2 (Azul)',
-                    'dron_verde1@upc.edu': 'Jugador 3 (Verde)',
-                    'dron_amarillo1@upc.edu': 'Jugador 4 (Amarillo)',
-                  }[e.key] ??
-                      e.key.split('@').first;
-                  return Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6),
-                    child: Text(
-                      '$name: ${e.value}',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: clr),
+                children: [
+                  ..._scores.entries.map((e) {
+                    final clr = _playerColor[e.key]!;
+                    final name = {
+                      'dron_rojo1@upc.edu': 'Jugador 1 (Rojo)',
+                      'dron_azul1@upc.edu': 'Jugador 2 (Azul)',
+                      'dron_verde1@upc.edu': 'Jugador 3 (Verde)',
+                      'dron_amarillo1@upc.edu': 'Jugador 4 (Amarillo)',
+                    }[e.key] ?? e.key.split('@').first;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: Text(
+                        '$name: ${e.value}',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: clr),
+                      ),
+                    );
+                  }).toList(),
+                  const SizedBox(width: 12),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.sports_esports),
+                    label: const Text('Mini Joc'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
                     ),
-                  );
-                }).toList(),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const DroneGame(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           );
 
-      return Scaffold(
+    return Scaffold(
       backgroundColor: const Color(0xFFEFF2F5),
       body: Stack(
         children: [

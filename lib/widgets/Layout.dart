@@ -86,6 +86,7 @@ class LayoutWrapper extends StatelessWidget {
           isRoute('/jocs/spectate'),
         ),
         _navItem(context, loc.store, Icons.store, '/store', isRoute('/store')),
+        _navItem(context, 'Play Testing', Icons.videogame_asset, '/play-testing', isRoute('/play-testing')),
       ]);
     }
 

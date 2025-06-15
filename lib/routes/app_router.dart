@@ -33,6 +33,12 @@ import 'package:SkyNet/models/post.dart';
 import 'package:SkyNet/services/socket_service.dart';
 import 'package:SkyNet/screens/notifications_screen.dart';
 import 'package:SkyNet/screens/social/following_screen.dart';
+import 'package:SkyNet/screens/mini_game/play_testing_game.dart';
+import 'package:SkyNet/screens/mini_game/play_testing_menu.dart';
+import 'package:SkyNet/screens/mini_game/drone_battle_screen.dart';
+import 'package:SkyNet/screens/mini_game/menu_jocs.dart';
+import 'package:SkyNet/screens/mini_game/pluja_asteroides.dart';
+import 'package:SkyNet/screens/mini_game/guerra_drons.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AuthService().isLoggedIn ? '/xarxes' : '/login',
@@ -146,6 +152,20 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: 'following',
           builder: (_, __) => const FollowingScreen(),
+        ),
+        GoRoute(
+          path: 'play-testing',
+          builder: (_, __) => const MenuJocsScreen(),
+          routes: [
+            GoRoute(
+              path: 'pluja-asteroides',
+              builder: (_, __) => const PlujaAsteroidesScreen(),
+            ),
+            GoRoute(
+              path: 'guerra-drons',
+              builder: (_, __) => const GuerraDronsScreen(),
+            ),
+          ],
         ),
       ],
     ),
