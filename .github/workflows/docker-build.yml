@@ -31,4 +31,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: jthort00/skynet-backend:latest
+          tags: jthort00/skynet-frontend:latest
