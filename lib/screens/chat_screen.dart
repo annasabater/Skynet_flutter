@@ -2,12 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:go_router/go_router.dart';
 
 import '../provider/users_provider.dart';
 import '../models/user.dart';
 import '../models/message.dart';
 import '../services/auth_service.dart';
 import '../services/socket_service.dart';
+import '../widgets/language_selector.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../provider/theme_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userId;
@@ -165,7 +169,55 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(peer.userName)),
+      appBar: AppBar(
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).maybePop(),
+              )
+            : null,
+        title: Text(peer.userName.isNotEmpty ? peer.userName : AppLocalizations.of(context)!.chat),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.explore),
+            tooltip: 'Brújula: ver todos los usuarios',
+            onPressed: () async {
+              final users = _provider.users.where((u) => u.id != _currentUser?.id).toList();
+              final result = await showDialog<User>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Selecciona usuario para chatear'),
+                  content: SizedBox(
+                    width: 300,
+                    height: 400,
+                    child: ListView(
+                      children: users.map((u) => ListTile(
+                        leading: CircleAvatar(child: Text(u.userName[0].toUpperCase())),
+                        title: Text(u.userName),
+                        subtitle: Text(u.email),
+                        onTap: () => Navigator.of(ctx).pop(u),
+                      )).toList(),
+                    ),
+                  ),
+                ),
+              );
+              if (result != null) {
+                _provider.addConversation(result.id!);
+                Navigator.of(context).pop();
+                GoRouter.of(context).go('/chat/${result.id}');
+              }
+            },
+          ),
+          const LanguageSelector(),
+          Consumer<ThemeProvider>(
+            builder: (_, t, __) => IconButton(
+              icon: Icon(t.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              tooltip: t.isDarkMode ? AppLocalizations.of(context)!.lightMode : AppLocalizations.of(context)!.darkMode,
+              onPressed: () => t.toggleTheme(),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(

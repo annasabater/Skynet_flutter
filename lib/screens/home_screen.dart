@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return LayoutWrapper(
-      title: loc.home,
+      titleBuilder: (loc) => loc.home,
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -75,62 +75,67 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    loc.appDescription,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 24),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        loc.appDescription,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 24),
 
-                  Text(
-                    loc.features,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
+                      Text(
+                        loc.features,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
 
-                  // Feature Cards Scroll adaptado a móvil y PC
-                  SizedBox(
-                    height: 260,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 4,
-                      itemBuilder: (context, index) {
-                        final features = [
-                          {
-                            'image': 'assets/drones_store.webp',
-                            'title': loc.storeFeatureTitle,
-                            'description': loc.storeFeatureDescription,
-                          },
-                          {
-                            'image': 'assets/drones_community.webp',
-                            'title': loc.socialFeatureTitle,
-                            'description': loc.socialFeatureDescription,
-                          },
-                          {
-                            'image': 'assets/drones_chat.webp',
-                            'title': loc.chatFeatureTitle,
-                            'description': loc.chatFeatureDescription,
-                          },
-                          {
-                            'image': 'assets/drones_games.webp',
-                            'title': loc.gamesFeatureTitle,
-                            'description': loc.gamesFeatureDescription,
-                          },
-                        ];
+                      // Feature Cards Scroll adaptado a móvil y PC
+                      SizedBox(
+                        height: 260,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 4,
+                          itemBuilder: (context, index) {
+                            final features = [
+                              {
+                                'image': 'assets/drones_store.webp',
+                                'title': loc.storeFeatureTitle,
+                                'description': loc.storeFeatureDescription,
+                              },
+                              {
+                                'image': 'assets/drones_community.webp',
+                                'title': loc.socialFeatureTitle,
+                                'description': loc.socialFeatureDescription,
+                              },
+                              {
+                                'image': 'assets/drones_chat.webp',
+                                'title': loc.chatFeatureTitle,
+                                'description': loc.chatFeatureDescription,
+                              },
+                              {
+                                'image': 'assets/drones_games.webp',
+                                'title': loc.gamesFeatureTitle,
+                                'description': loc.gamesFeatureDescription,
+                              },
+                            ];
 
-                        final feature = features[index];
+                            final feature = features[index];
 
-                        return _HoverFeatureCard(
-                          image: feature['image']!,
-                          title: feature['title']!,
-                          description: feature['description']!,
-                          maxWidth: cardWidth,
-                        );
-                      },
-                    ),
+                            return _HoverFeatureCard(
+                              image: feature['image']!,
+                              title: feature['title']!,
+                              description: feature['description']!,
+                              maxWidth: cardWidth,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -216,9 +221,11 @@ class __HoverFeatureCardState extends State<_HoverFeatureCard> {
                     Text(
                       widget.description,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         color: colors.onSurfaceVariant,
                       ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

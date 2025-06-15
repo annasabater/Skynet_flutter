@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlujaAsteroidesScreen extends StatefulWidget {
   const PlujaAsteroidesScreen({super.key});
@@ -31,7 +32,7 @@ class _WelcomeView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(onPressed: () => context.go('/play-testing')),
-        title: const Text('Pluja d\'Asteroides'),
+        title: Text(AppLocalizations.of(context)!.games),
         backgroundColor: Colors.indigo[900],
       ),
       backgroundColor: Colors.black,
@@ -236,7 +237,7 @@ class _GameViewState extends State<_GameView> {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(onPressed: widget.onExit),
-        title: const Text('Pluja d\'Asteroides'),
+        title: Text(AppLocalizations.of(context)!.games),
         backgroundColor: Colors.indigo[900],
       ),
       backgroundColor: Colors.black,

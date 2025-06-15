@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MenuJocsScreen extends StatelessWidget {
   const MenuJocsScreen({super.key});
@@ -8,7 +9,7 @@ class MenuJocsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mini Jocs'),
+        title: Text(AppLocalizations.of(context)!.games),
         backgroundColor: Colors.indigo[900],
       ),
       backgroundColor: Colors.black,

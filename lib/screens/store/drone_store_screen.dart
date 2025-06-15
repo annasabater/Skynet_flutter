@@ -12,6 +12,9 @@ import 'my_drones_tab.dart';
 import '../../widgets/balance_form.dart';
 import '../../widgets/cart_modal.dart';
 import '../history/history_screen.dart';
+import '../../widgets/language_selector.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../provider/theme_provider.dart';
 
 class DroneStoreScreen extends StatefulWidget {
   const DroneStoreScreen({Key? key}) : super(key: key);
@@ -64,8 +67,22 @@ class _DroneStoreScreenState extends State<DroneStoreScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Botiga'),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).maybePop(),
+              )
+            : null,
+        title: Text(AppLocalizations.of(context)!.store),
         actions: [
+          const LanguageSelector(),
+          Consumer<ThemeProvider>(
+            builder: (_, t, __) => IconButton(
+              icon: Icon(t.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              tooltip: t.isDarkMode ? AppLocalizations.of(context)!.lightMode : AppLocalizations.of(context)!.darkMode,
+              onPressed: () => t.toggleTheme(),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.history),
             tooltip: 'Historial de compras/ventas',
@@ -183,10 +200,10 @@ class _DroneStoreScreenState extends State<DroneStoreScreen>
           indicatorWeight: 4,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-          tabs: const [
-            Tab(text: 'Tots'),
-            Tab(text: 'Favorits'),
-            Tab(text: 'Els meus'),
+          tabs: [
+            Tab(text: AppLocalizations.of(context)!.allTab),
+            Tab(text: AppLocalizations.of(context)!.favoritesTab),
+            Tab(text: AppLocalizations.of(context)!.myDronesTab),
           ],
         ),
       ),

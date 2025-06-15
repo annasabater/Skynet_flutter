@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlayTestingGameScreen extends StatefulWidget {
   const PlayTestingGameScreen({super.key});
@@ -31,7 +32,7 @@ class _WelcomeView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(onPressed: () => context.go('/play-testing')),
-        title: const Text('Dron Dodge'),
+        title: Text(AppLocalizations.of(context)!.games),
         backgroundColor: Colors.indigo[900],
       ),
       backgroundColor: Colors.black,
@@ -207,7 +208,7 @@ class _GameViewState extends State<_GameView> {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(onPressed: widget.onExit),
-        title: const Text('Dron Dodge'),
+        title: Text(AppLocalizations.of(context)!.games),
         backgroundColor: Colors.indigo[900],
       ),
       backgroundColor: Colors.black,

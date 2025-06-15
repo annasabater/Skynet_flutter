@@ -7,6 +7,9 @@ import '../../provider/drone_provider.dart';
 import '../../widgets/drone_card.dart';
 import '../../widgets/store_sidebar.dart';
 import '../../widgets/drone_detail_modal.dart';
+import '../../widgets/language_selector.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../provider/theme_provider.dart';
 
 class AllTab extends StatefulWidget {
   const AllTab({super.key});
@@ -114,7 +117,7 @@ class _AllTabState extends State<AllTab> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const Text('Drones por página:'),
+                      Text('Drones por página:'),
                       const SizedBox(width: 8),
                       DropdownButton<int>(
                         value: _dronesPerPage,
@@ -191,19 +194,6 @@ class _AllTabState extends State<AllTab> {
           ),
         ],
       ),
-      appBar:
-          isDesktop
-              ? null
-              : AppBar(
-                title: const Text('Tienda de Drones'),
-                leading: Builder(
-                  builder:
-                      (context) => IconButton(
-                        icon: const Icon(Icons.menu),
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                      ),
-                ),
-              ),
     );
   }
 }

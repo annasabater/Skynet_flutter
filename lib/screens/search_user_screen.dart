@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../provider/users_provider.dart';
 import '../models/user.dart';
-import '../widgets/language_selector.dart';  
+import '../widgets/language_selector.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../provider/theme_provider.dart';
 
 class SearchUserScreen extends StatefulWidget {
   const SearchUserScreen({super.key});
@@ -40,11 +42,28 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
              u.email.toLowerCase().contains(q);
     }).toList();
 
+    // Mostrar todos los usuarios si la query está vacía
+    final showAll = _query.isEmpty;
+    final displayUsers = showAll ? provider.users.where((u) => u.id != currentUser?.id).toList() : results;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buscar usuario'),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).maybePop(),
+              )
+            : null,
+        title: Text(AppLocalizations.of(context)!.users),
         actions: [
-          const LanguageSelector(), 
+          const LanguageSelector(),
+          Consumer<ThemeProvider>(
+            builder: (_, t, __) => IconButton(
+              icon: Icon(t.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              tooltip: t.isDarkMode ? AppLocalizations.of(context)!.lightMode : AppLocalizations.of(context)!.darkMode,
+              onPressed: () => t.toggleTheme(),
+            ),
+          ),
         ],
       ),
       body: provider.isLoading
@@ -62,13 +81,13 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                   ),
                 ),
                 Expanded(
-                  child: results.isEmpty
+                  child: displayUsers.isEmpty
                       ? const Center(child: Text('No se encontró nadie.'))
                       : ListView.separated(
-                          itemCount: results.length,
+                          itemCount: displayUsers.length,
                           separatorBuilder: (_, __) => const Divider(),
                           itemBuilder: (ctx, i) {
-                            final user = results[i];
+                            final user = displayUsers[i];
                             return ListTile(
                               leading: CircleAvatar(
                                 child: Text(user.userName[0].toUpperCase()),

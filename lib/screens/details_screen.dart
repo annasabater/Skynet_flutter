@@ -27,7 +27,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     final provider = Provider.of<UserProvider>(context, listen: true);
     
     return LayoutWrapper(
-      title: 'Usuaris',
+      titleBuilder: (loc) => loc.users,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),

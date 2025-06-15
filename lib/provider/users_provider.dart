@@ -42,7 +42,7 @@ class UserProvider with ChangeNotifier {
     await loadConversations();
   }
 
-  /// Carga desde la API todos los usuarios
+  /// Carga desde la API todos los usuarios (sin paginación)
   Future<void> loadUsers() async {
     _setLoading(true);
     _setError(null);

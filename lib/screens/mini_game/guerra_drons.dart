@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GuerraDronsScreen extends StatefulWidget {
   const GuerraDronsScreen({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class _GuerraDronsScreenState extends State<GuerraDronsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Guerra de Drons'),
+        title: Text(AppLocalizations.of(context)!.games),
         backgroundColor: Colors.blue[900],
         leading: BackButton(onPressed: () => context.go('/play-testing')),
       ),
@@ -297,7 +298,7 @@ class _GuerraDronsGameState extends State<GuerraDronsGame> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Guerra de Drons'),
+        title: Text(AppLocalizations.of(context)!.games),
         backgroundColor: Colors.blue[900],
         leading: BackButton(
           onPressed: () {

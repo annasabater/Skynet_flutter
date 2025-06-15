@@ -33,7 +33,7 @@ class _EditarScreenState extends State<EditarScreen> {
     final provider = Provider.of<UserProvider>(context, listen: true);
 
     return LayoutWrapper(
-      title: 'Crear nou usuari',
+      titleBuilder: (loc) => loc.createUser,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),

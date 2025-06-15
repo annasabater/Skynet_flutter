@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StoreSidebar extends StatefulWidget {
   final void Function(Map<String, dynamic> filters) onApply;
@@ -41,24 +42,25 @@ class _StoreSidebarState extends State<StoreSidebar> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       children: [
-        const Text(
-          'Filtros',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        Text(
+          loc.filters,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
         ),
         const SizedBox(height: 24),
         ExpansionTile(
           initiallyExpanded: true,
-          title: const Text(
-            'Búsqueda y precio',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            loc.searchAndPrice,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Buscar por nombre'),
+              decoration: InputDecoration(labelText: loc.searchByName),
             ),
             const SizedBox(height: 16),
             Row(
@@ -67,8 +69,8 @@ class _StoreSidebarState extends State<StoreSidebar> {
                   child: TextField(
                     controller: _minPriceController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Precio mínimo',
+                    decoration: InputDecoration(
+                      labelText: loc.minPrice,
                     ),
                   ),
                 ),
@@ -77,8 +79,8 @@ class _StoreSidebarState extends State<StoreSidebar> {
                   child: TextField(
                     controller: _maxPriceController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Precio máximo',
+                    decoration: InputDecoration(
+                      labelText: loc.maxPrice,
                     ),
                   ),
                 ),
@@ -89,9 +91,9 @@ class _StoreSidebarState extends State<StoreSidebar> {
         const SizedBox(height: 16),
         ExpansionTile(
           initiallyExpanded: true,
-          title: const Text(
-            'Categoría y condición',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            loc.categoryAndCondition,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           children: [
             DropdownButtonFormField<String>(
@@ -101,13 +103,13 @@ class _StoreSidebarState extends State<StoreSidebar> {
                       .map(
                         (e) => DropdownMenuItem(
                           value: e,
-                          child: Text(e[0].toUpperCase() + e.substring(1)),
+                          child: Text(e == 'venta' ? loc.sale : loc.rent),
                         ),
                       )
                       .toList(),
               onChanged: (v) => setState(() => _selectedCategory = v),
               decoration: const InputDecoration(), // Sin labelText
-              hint: const Text('Selecciona categoría'),
+              hint: Text(loc.selectCategory),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
@@ -117,27 +119,27 @@ class _StoreSidebarState extends State<StoreSidebar> {
                       .map(
                         (e) => DropdownMenuItem(
                           value: e,
-                          child: Text(e[0].toUpperCase() + e.substring(1)),
+                          child: Text(e == 'nuevo' ? loc.newCondition : loc.usedCondition),
                         ),
                       )
                       .toList(),
               onChanged: (v) => setState(() => _selectedCondition = v),
               decoration: const InputDecoration(), // Sin labelText
-              hint: const Text('Selecciona condición'),
+              hint: Text(loc.selectCondition),
             ),
           ],
         ),
         const SizedBox(height: 16),
         ExpansionTile(
           initiallyExpanded: true,
-          title: const Text(
-            'Rating mínimo',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            loc.minRating,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           children: [
             Row(
               children: [
-                const Text('Mínimo rating:'),
+                Text(loc.minRatingLabel),
                 Expanded(
                   child: Slider(
                     value: _minRating,
@@ -159,7 +161,7 @@ class _StoreSidebarState extends State<StoreSidebar> {
             Expanded(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.filter_alt),
-                label: const Text('Aplicar filtros'),
+                label: Text(loc.applyFilters),
                 onPressed: _applyFilters,
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size.fromHeight(48),
@@ -170,7 +172,7 @@ class _StoreSidebarState extends State<StoreSidebar> {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.refresh),
-                label: const Text('Resetear'),
+                label: Text(loc.reset),
                 onPressed: _resetFilters,
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(48),

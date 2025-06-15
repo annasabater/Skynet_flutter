@@ -12,9 +12,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LayoutWrapper extends StatelessWidget {
   final Widget child;
-  final String title;
+  final String Function(AppLocalizations) titleBuilder;
 
-  const LayoutWrapper({super.key, required this.child, required this.title});
+  const LayoutWrapper({super.key, required this.child, required this.titleBuilder});
 
   @override
   Widget build(BuildContext context) {
@@ -92,13 +92,19 @@ class LayoutWrapper extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).maybePop(),
+              )
+            : null,
+        title: Text(titleBuilder(AppLocalizations.of(context)!)),
         actions: [
           const LanguageSelector(),
           Consumer<ThemeProvider>(
             builder: (_, t, __) => IconButton(
               icon: Icon(t.isDarkMode ? Icons.dark_mode : Icons.light_mode),
-              tooltip: t.isDarkMode ? loc.lightMode : loc.darkMode,
+              tooltip: t.isDarkMode ? AppLocalizations.of(context)!.lightMode : AppLocalizations.of(context)!.darkMode,
               onPressed: () => t.toggleTheme(),
             ),
           ),

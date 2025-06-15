@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../provider/users_provider.dart';
 import '../models/user.dart';
-import '../widgets/language_selector.dart'; 
+import '../widgets/language_selector.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../provider/theme_provider.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -33,16 +35,40 @@ class _ChatListScreenState extends State<ChatListScreen> {
     final provider = context.watch<UserProvider>();
     final convIds = provider.conversationUserIds;
     final convUsers = provider.users.where((u) => convIds.contains(u.id)).toList();
+    final allUsers = provider.users.where((u) => u.id != provider.currentUser?.id).toList();
+    String _search = '';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chats'),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).maybePop(),
+              )
+            : null,
+        title: Text(AppLocalizations.of(context)!.chat),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () => GoRouter.of(context).go('/chat/search'),
+            onPressed: () async {
+              final result = await showSearch(
+                context: context,
+                delegate: _UserSearchDelegate(allUsers),
+              );
+              if (result != null) {
+                provider.addConversation(result.id!);
+                GoRouter.of(context).go('/chat/${result.id}');
+              }
+            },
           ),
-          const LanguageSelector(), 
+          const LanguageSelector(),
+          Consumer<ThemeProvider>(
+            builder: (_, t, __) => IconButton(
+              icon: Icon(t.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              tooltip: t.isDarkMode ? AppLocalizations.of(context)!.lightMode : AppLocalizations.of(context)!.darkMode,
+              onPressed: () => t.toggleTheme(),
+            ),
+          ),
         ],
       ),
       body: provider.isLoading
@@ -68,6 +94,47 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     );
                   },
                 ),
+    );
+  }
+}
+
+class _UserSearchDelegate extends SearchDelegate<User?> {
+  final List<User> users;
+  _UserSearchDelegate(this.users);
+
+  @override
+  List<Widget>? buildActions(BuildContext context) => [
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () => query = '',
+        ),
+      ];
+
+  @override
+  Widget? buildLeading(BuildContext context) => IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => close(context, null),
+      );
+
+  @override
+  Widget buildResults(BuildContext context) => _buildList(context);
+
+  @override
+  Widget buildSuggestions(BuildContext context) => _buildList(context);
+
+  Widget _buildList(BuildContext context) {
+    final filtered = users.where((u) =>
+        u.userName.toLowerCase().contains(query.toLowerCase()) ||
+        u.email.toLowerCase().contains(query.toLowerCase()));
+    return ListView(
+      children: filtered
+          .map((u) => ListTile(
+                leading: CircleAvatar(child: Text(u.userName[0].toUpperCase())),
+                title: Text(u.userName),
+                subtitle: Text(u.email),
+                onTap: () => close(context, u),
+              ))
+          .toList(),
     );
   }
 }

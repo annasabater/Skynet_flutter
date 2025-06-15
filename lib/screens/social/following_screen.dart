@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../provider/users_provider.dart';
 import '../../services/social_service.dart';
+import '../../widgets/language_selector.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../provider/theme_provider.dart';
 
 class FollowingScreen extends StatefulWidget {
   const FollowingScreen({Key? key}) : super(key: key);
@@ -97,7 +100,23 @@ class _FollowingScreenState extends State<FollowingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Seguidos y buscar usuarios')),
+      appBar: AppBar(
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).maybePop(),
+              )
+            : null,
+        title: Text(AppLocalizations.of(context)!.users),
+        actions: [
+          const LanguageSelector(),
+          IconButton(
+            icon: Icon(Theme.of(context).brightness == Brightness.dark ? Icons.dark_mode : Icons.light_mode),
+            tooltip: Theme.of(context).brightness == Brightness.dark ? AppLocalizations.of(context)!.lightMode : AppLocalizations.of(context)!.darkMode,
+            onPressed: () => context.read<ThemeProvider>().toggleTheme(),
+          ),
+        ],
+      ),
       body:
           _loading
               ? const Center(child: CircularProgressIndicator())
@@ -299,7 +318,13 @@ class _FollowingScreenState extends State<FollowingScreen> {
                                     )
                                     : ElevatedButton(
                                       child: const Text('Seguir'),
-                                      onPressed: () => _followUser(user.id!),
+                                      onPressed: () async {
+                                        await _followUser(user.id!);
+                                        setState(() {
+                                          _searchResults[i] = user;
+                                          _followingUsers.add(user);
+                                        });
+                                      },
                                     ),
                           );
                         },

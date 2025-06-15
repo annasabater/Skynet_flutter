@@ -17,7 +17,7 @@ class _BorrarScreenState extends State<BorrarScreen> {
     final provider = Provider.of<UserProvider>(context, listen: true);
     
     return LayoutWrapper(
-      title: 'Esborrar usuaris',
+      titleBuilder: (loc) => loc.deleteUser,
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(

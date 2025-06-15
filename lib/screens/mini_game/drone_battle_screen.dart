@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'drone_battle_game.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DroneBattleScreen extends StatefulWidget {
   const DroneBattleScreen({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class _DroneBattleScreenState extends State<DroneBattleScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Batalla de Drones'),
+        title: Text(AppLocalizations.of(context)!.games),
         backgroundColor: Colors.blue[900],
         leading: BackButton(onPressed: () => context.go('/play-testing')),
       ),

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../provider/users_provider.dart';
 import '../services/socket_service.dart';
 import '../data/game_texts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class _FancyButton extends StatelessWidget {
@@ -90,7 +91,7 @@ class JocsPage extends StatelessWidget {
     final email = context.read<UserProvider>().currentUser!.email;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Juegos')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.games)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -105,12 +106,12 @@ class JocsPage extends StatelessWidget {
                 _FancyButton(
                   label: 'Descripción',
                   icon: Icons.info_outline,
-                  onTap: () => _showTextDialog(context, 'Descripción del juego', kGameDescription),
+                  onTap: () => _showTextDialog(context, 'Descripción', kGameDescription),
                 ),
                 _FancyButton(
                   label: 'Manual',
                   icon: Icons.menu_book_outlined,
-                  onTap: () => _showTextDialog(context, 'Manual del juego', kGameManual),
+                  onTap: () => _showTextDialog(context, 'Manual', kGameManual),
                 ),
               ],
             ),

@@ -8,6 +8,8 @@ import '../../models/post.dart';
 import '../../provider/theme_provider.dart';
 import '../../services/social_service.dart';
 import '../../widgets/post_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../widgets/language_selector.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final String userId;
@@ -47,39 +49,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  Future<void> _toggleFollow() async {
-    try {
-      if (_following) {
-        final confirm = await showDialog<bool>(
-          context: context,
-          builder: (c) => AlertDialog(
-            title: const Text('Dejar de seguir'),
-            content: Text('¿Quieres dejar de seguir a ${_user!['userName']}?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(c, false),
-                child: const Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(c, true),
-                child: const Text('Sí'),
-              ),
-            ],
-          ),
-        );
-        if (confirm != true) return;
-        await SocialService.unFollow(widget.userId);
-      } else {
-        await SocialService.follow(widget.userId);
-      }
-      await _loadProfile();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al ${_following ? 'dejar de seguir' : 'seguir'}: $e')),
-      );
-    }
-  }
-
   int _columnsForWidth(double w) {
     if (w >= 1280) return 4;
     if (w >= 1024) return 3;
@@ -95,17 +64,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        // Usamos el color por defecto del AppBar para mantener consistencia
-        // backgroundColor y elevation quedan como los del tema global
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text(''),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).maybePop(),
+              )
+            : null,
+        title: Text(AppLocalizations.of(context)!.profile),
         centerTitle: true,
         actions: [
+          const LanguageSelector(),
           IconButton(
             icon: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
+            tooltip: isDark ? AppLocalizations.of(context)!.lightMode : AppLocalizations.of(context)!.darkMode,
             onPressed: () => themeProv.toggleTheme(),
           ),
           IconButton(
@@ -155,14 +126,40 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               ElevatedButton(
-                                onPressed: _toggleFollow,
+                                onPressed: () async {
+                                  if (_following) {
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (c) => AlertDialog(
+                                        title: Text(AppLocalizations.of(context)!.unfollowTitle),
+                                        content: Text(AppLocalizations.of(context)!.unfollowConfirm(_user!['userName'])),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(c, false),
+                                            child: Text(AppLocalizations.of(context)!.cancel),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () => Navigator.pop(c, true),
+                                            child: Text(AppLocalizations.of(context)!.accept),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (confirm != true) return;
+                                    await SocialService.unFollow(widget.userId);
+                                    setState(() => _following = false);
+                                  } else {
+                                    await SocialService.follow(widget.userId);
+                                    setState(() => _following = true);
+                                  }
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: _following
                                       ? scheme.secondaryContainer
                                       : scheme.primary,
                                 ),
                                 child: Text(
-                                  _following ? 'Siguiendo' : 'Seguir',
+                                  _following ? AppLocalizations.of(context)!.following : AppLocalizations.of(context)!.follow,
                                   style: TextStyle(
                                     color: _following
                                         ? scheme.onSecondaryContainer
@@ -173,7 +170,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               const SizedBox(width: 12),
                               OutlinedButton.icon(
                                 icon: const Icon(Icons.chat_bubble_outline),
-                                label: const Text('Mensaje'),
+                                label: Text(AppLocalizations.of(context)!.message),
                                 onPressed: () =>
                                     context.go('/chat/${widget.userId}'),
                               ),
