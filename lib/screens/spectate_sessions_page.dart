@@ -54,7 +54,7 @@ class _SpectateSessionsPageState extends State<SpectateSessionsPage> {
 
 void _connectAsSpectator() {
   _socket = IO.io(
-    '${SocketService.serverUrl}/jocs',
+    '${SocketService.baseUrl}/jocs',
     {
       'transports': ['websocket'],
       'query': {

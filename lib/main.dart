@@ -28,43 +28,35 @@ import 'package:SkyNet/provider/cart_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  try {
-    await dotenv.load(fileName: '.env');
-    print('Archivo .env cargado correctamente');
-  } catch (e) {
-    print('Error al cargar archivo .env: $e');
-  }
+     try {
+     await dotenv.load(fileName: '.env');
+     print('Archivo .env cargado correctamente');
+   } catch (e) {
+     print('Error al cargar archivo .env: $e');
+   }
+   // En Web, inicializar Google Maps API
+   if (kIsWeb) {
+     try {
+       print('Inicializando configuración web...');
+       // Configuramos API key
+       if (dotenv.env.containsKey('GOOGLE_MAPS_API_KEY') &&
+           dotenv.env['GOOGLE_MAPS_API_KEY']!.isNotEmpty) {
+         final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!;
+         print('API key encontrada en .env: ${apiKey.substring(0, 3)}***');
+         setupWebGoogleMapsApi(apiKey);
+       } else {
+         print(
+           'ADVERTENCIA: GOOGLE_MAPS_API_KEY no está definida en el archivo .env',
+         );
+       }
+     } catch (e) {
+       print('Error al inicializar configuración web: $e');
+     }
+   }
 
-  // Configuración del servidor
-  try {
-    SocketService.serverUrl =
-        dotenv.env['SERVER_URL'] ?? 'http://localhost:3000';
-  } catch (e) {
-    print('Error al configurar el servidor: $e');
-  }
+   runApp(const MyApp());
+ }
 
-  // En Web, inicializar Google Maps API
-  if (kIsWeb) {
-    try {
-      print('Inicializando configuración web...');
-      // Configuramos API key
-      if (dotenv.env.containsKey('GOOGLE_MAPS_API_KEY') &&
-          dotenv.env['GOOGLE_MAPS_API_KEY']!.isNotEmpty) {
-        final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!;
-        print('API key encontrada en .env: ${apiKey.substring(0, 3)}***');
-        setupWebGoogleMapsApi(apiKey);
-      } else {
-        print(
-          'ADVERTENCIA: GOOGLE_MAPS_API_KEY no está definida en el archivo .env',
-        );
-      }
-    } catch (e) {
-      print('Error al inicializar configuración web: $e');
-    }
-  }
-
-  runApp(const MyApp());
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

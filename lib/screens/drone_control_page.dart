@@ -65,7 +65,7 @@ class _DroneControlPageState extends State<DroneControlPage> {
 void _connectSocket() {
   final token = SocketService.jwt;
   _socket = IO.io(
-    '${SocketService.serverUrl}/jocs',
+    '${SocketService.baseUrl}/jocs',
     {
       'transports' : ['websocket'],
       'auth'       : {'token': token},
